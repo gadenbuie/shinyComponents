@@ -1,0 +1,21 @@
+Package: shinyComponents
+Title: 'Shiny' Components in 'R Markdown'
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Garrick",
+           family = "Aden-Buie",
+           role = c("aut", "cre"),
+           email = "garrick@adenbuie.com",
+           comment = c(ORCID = "0000-0002-7111-0077"))
+Description: 'Shiny' components, stored in 'R Markdown'
+    documents.
+License: MIT + file LICENSE
+Imports: 
+    htmltools,
+    knitr,
+    R6,
+    shiny
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1

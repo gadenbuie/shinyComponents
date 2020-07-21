@@ -1,0 +1,118 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = FALSE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# shinyComponents
+
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+<!-- badges: end -->
+
+The goal of shinyComponents is to turn R Markdown documents in self-contained
+Shiny components.
+Like [web components](https://developer.mozilla.org/en-US/docs/Web/Web_Components)
+meets [Shiny modules](https://shiny.rstudio.com/articles/modules.html)
+(without that _ShadowDOM_ business).
+
+## Installation
+
+You can install the released version of shinyComponents from Github.
+
+``` r
+# install.packages("remotes")
+remotes::install_github("gadenbuie/shinyComponents")
+```
+
+## Example
+
+Writing a Shiny component often requires wiring together a number of different languages:
+R for the Shiny UI and Server pieces, 
+CSS for styling, 
+JavaScript for interactivity,
+and more R for data and other things.
+
+Imagine you've written out all of those pieces in a R Markdown file,
+like the one in the details section below (click to expand).
+
+<details><summary>Example R Markdown: <code>example-component.Rmd</code></summary>
+
+````markdown
+`r paste(readLines(system.file("example-component.Rmd", package = "shinyComponents")), collapse = "\n")`
+````
+
+</details>
+
+To read the component from the R Markdown, 
+load `shinyComponents` and create a new `ShinyComponent`.
+
+```{r example}
+library(shinyComponents)
+
+ex_rmd <- system.file("example-component.Rmd", package = "shinyComponents")
+
+ex <- ShinyComponent$new(ex_rmd)
+```
+
+The chunk named `ui` becomes available in the `ui()` method,
+making a chunk like this
+
+````markdown
+```{r ui}`r ''`
+h3(initial_header)
+sliderInput("number", "Pick a number", min = 0, max = 10, value = 1)
+verbatimTextOutput("debug")
+```
+````
+
+available in the `$ui()` method.
+
+```{r eval=FALSE}
+ex$ui()
+```
+
+```{r echo=FALSE}
+print(ex$ui())
+```
+
+The `server` chunk is available in the server method `$server()`,
+to be called anywhere in your server function.
+Any CSS or JavaScript chunks are concatenated and included in appropriate
+`<style>` and `<script>` tags when you call the `$assets()` method.
+
+Here's a bare bone Shiny app incorporating all of the pieces.
+
+```{r eval=FALSE}
+library(shiny)
+
+ex <- ShinyComponent$new(ex_rmd)
+
+ui <- fluidPage(
+  ex$ui(),
+  ex$assets()
+)
+
+server <- function(input, output, session) {
+  ex$server()
+}
+
+shinyApp(ui, server)
+```
+
+Or you can run a demo app that pulls the components together
+into an app just like the one above.
+
+``` r
+ex$app()
+```

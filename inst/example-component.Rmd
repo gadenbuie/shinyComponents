@@ -1,0 +1,31 @@
+---
+title: "Example Component"
+---
+
+```{r}
+library(shiny)
+initial_header <- "Just a simple demo"
+```
+
+```{r ui}
+h3(initial_header)
+sliderInput("number", "Pick a number", min = 0, max = 10, value = 1)
+verbatimTextOutput("debug")
+```
+
+```{r server}
+output$debug <- renderPrint(input$number)
+```
+
+```{css}
+h3 { color: #aaa; }
+```
+
+```{js}
+setTimeout(function() {
+  let h3 = document.querySelector('h3')
+  h3.textContent = 'Just an awesome demo'
+  h3.style.color = 'red'
+}, 3000)
+```
+
