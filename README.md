@@ -139,3 +139,6 @@ just like the one above.
 ``` r
 ex$app()
 ```
+
+![Demonstration of Shiny app from R Markdown component
+document.](https://raw.githubusercontent.com/gadenbuie/shinyComponents/assets/demo-component.gif)
