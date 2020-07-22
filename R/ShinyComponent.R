@@ -32,7 +32,10 @@ ShinyComponent <- R6::R6Class(
       ui_elements <- rlang::parse_exprs(paste(self$chunks$ui$chunk, collapse = "\n"))
       ui_parent <- rlang::call2(htmltools::tagList, !!!ui_elements)
       call_env <- rlang::env_clone(self$global, parent = parent.frame())
-      rlang::eval_bare(ui_parent, env = call_env)
+      htmltools::tagList(
+        rlang::eval_bare(ui_parent, env = call_env),
+        self$assets()
+      )
     },
     server = function() {
       call_env <- rlang::env_clone(self$global, parent = parent.frame())
@@ -41,10 +44,10 @@ ShinyComponent <- R6::R6Class(
     assets = function() {
       css <- private$get_code_from_chunks_by_engine("css")
       js <- private$get_code_from_chunks_by_engine("js")
-      shiny::tagList(
+      shiny::singleton(shiny::tagList(
         if (length(css)) htmltools::tags$style(paste(css, collapse = "\n")),
         if (length(js)) htmltools::tags$script(paste(js, collapse = "\n"))
-      )
+      ))
     },
     app = function(...) {
       shiny::shinyApp(
