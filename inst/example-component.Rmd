@@ -9,12 +9,19 @@ initial_header <- "Just a simple demo"
 
 ```{r ui}
 h3(initial_header)
-sliderInput("number", "Pick a number", min = 0, max = 10, value = 1)
-verbatimTextOutput("debug")
+p(message)
+sliderInput(ns("number"), "Pick a number", min = 0, max = 10, value = 1)
+verbatimTextOutput(ns("debug"))
 ```
 
 ```{r server}
-output$debug <- renderPrint(input$number)
+function(id) {
+  moduleServer(id, function(input, output, session) {
+    output$debug <- renderPrint(input$number)
+    
+    return(reactive(input$number))
+  })
+}
 ```
 
 ```{css}

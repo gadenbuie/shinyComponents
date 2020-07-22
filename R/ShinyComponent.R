@@ -28,15 +28,24 @@ ShinyComponent <- R6::R6Class(
         }
       }
     },
-    ui = function() {
+    ui = function(id, ...) {
       ui_elements <- rlang::parse_exprs(paste(self$chunks$ui$chunk, collapse = "\n"))
       ui_parent <- rlang::call2(htmltools::tagList, !!!ui_elements)
       call_env <- rlang::env_clone(self$global, parent = parent.frame())
+      call_env[["ns"]] <- shiny::NS(id)
+      args <- rlang::list2(...)
+      if (is.null(names(args)) || !all(nzchar(names(args)))) {
+        stop("All ... arguments to ShinyComponent ui() method must be named")
+      }
+      mapply(names(args), args, FUN = function(name, val) {
+        call_env[[name]] <- val
+      })
       rlang::eval_bare(ui_parent, env = call_env)
     },
-    server = function() {
+    server = function(id, ...) {
       call_env <- rlang::env_clone(self$global, parent = parent.frame())
-      eval(parse(text = self$chunks$server$chunk), envir = call_env)
+      func <- eval(parse(text = self$chunks$server$chunk), envir = call_env)
+      func(id, ...)
     },
     assets = function() {
       css <- private$get_code_from_chunks_by_engine("css")
