@@ -10,14 +10,15 @@ Authors@R:
 Description: 'Shiny' components, stored in 'R Markdown'
     documents.
 License: MIT + file LICENSE
+URL: https://github.com/gadenbuie/shinyComponents
+BugReports: https://github.com/gadenbuie/shinyComponents/issues
 Imports: 
     htmltools,
     knitr,
     R6,
+    rlang,
     shiny
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-URL: https://github.com/gadenbuie/shinyComponents
-BugReports: https://github.com/gadenbuie/shinyComponents/issues
