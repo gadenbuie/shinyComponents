@@ -15,13 +15,8 @@ verbatimTextOutput(ns("debug"))
 ```
 
 ```{r server}
-function(id) {
-  moduleServer(id, function(input, output, session) {
-    output$debug <- renderPrint(input$number)
-    
-    return(reactive(input$number))
-  })
-}
+output$debug <- renderPrint(input$number)
+reactive(input$number)
 ```
 
 ```{css}

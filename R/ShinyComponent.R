@@ -28,8 +28,8 @@ ShinyComponent <- R6::R6Class(
         }
       }
     },
-    ui = function(id, ...) {
-      ui_elements <- rlang::parse_exprs(paste(self$chunks$ui$chunk, collapse = "\n"))
+    ui = function(..., id = NULL) {
+      ui_elements <- private$parse_text_exprs(self$chunks$ui$chunk)
       ui_parent <- rlang::call2(htmltools::tagList, !!!ui_elements)
       call_env <- rlang::env_clone(self$global, parent = parent.frame())
       call_env[["ns"]] <- shiny::NS(id)
@@ -42,10 +42,31 @@ ShinyComponent <- R6::R6Class(
       })
       rlang::eval_bare(ui_parent, env = call_env)
     },
-    server = function(id, ...) {
+    server = function(..., id = NULL) {
       call_env <- rlang::env_clone(self$global, parent = parent.frame())
-      func <- eval(parse(text = self$chunks$server$chunk), envir = call_env)
-      func(id, ...)
+      args <- rlang::list2(...)
+
+      # if `id` was provided, the server chunk becomes a module,
+      # otherwise it gets evaluated as a regular server chunk
+      if (!is.null(id)) {
+        module_fn <- rlang::new_function(
+          rlang::pairlist2(input=, output=, session=),
+          private$parse_text_body(self$chunks$server$chunk),
+          call_env
+        )
+        shiny::callModule(module = module_fn, id = id, ...)
+      } else {
+        if (
+          rlang::has_length(args) &&
+          (is.null(names(args)) || !all(nzchar(names(args))))
+        ) {
+          stop("All ... arguments to ShinyComponent server() method must be named")
+        }
+        mapply(names(args), args, FUN = function(name, val) {
+          call_env[[name]] <- val
+        })
+        eval(parse(text = self$chunks$server$chunk), envir = call_env)
+      }
     },
     assets = function() {
       css <- private$get_code_from_chunks_by_engine("css")
@@ -148,6 +169,12 @@ ShinyComponent <- R6::R6Class(
         identical(tolower(x$engine), tolower(engine))
       })
       self$chunks[is_engine]
+    },
+    parse_text_exprs = function(code) {
+      rlang::parse_exprs(paste(code, collapse = "\n"))
+    },
+    parse_text_body = function(code) {
+      rlang::parse_expr(paste0("{", paste(code, collapse = "\n"), "}"))
     }
   )
 )

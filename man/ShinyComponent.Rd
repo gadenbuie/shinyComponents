@@ -33,7 +33,7 @@ Create A Shiny Component from an R Markdown Document
 \if{latex}{\out{\hypertarget{method-ui}{}}}
 \subsection{Method \code{ui()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$ui()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$ui(..., id = NULL)}\if{html}{\out{</div>}}
 }
 
 }
@@ -42,7 +42,7 @@ Create A Shiny Component from an R Markdown Document
 \if{latex}{\out{\hypertarget{method-server}{}}}
 \subsection{Method \code{server()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$server()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$server(..., id = NULL)}\if{html}{\out{</div>}}
 }
 
 }
