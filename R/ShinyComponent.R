@@ -74,8 +74,8 @@ ShinyComponent <- R6::R6Class(
       css <- private$get_code_from_chunks_by_engine("css")
       js <- private$get_code_from_chunks_by_engine("js")
       shiny::tagList(
-        if (length(css)) htmltools::tags$style(paste(css, collapse = "\n")),
-        if (length(js)) htmltools::tags$script(paste(js, collapse = "\n"))
+        tag_css_style(css),
+        tag_js_script(js)
       )
     },
     app = function(...) {
