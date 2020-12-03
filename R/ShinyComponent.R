@@ -34,12 +34,14 @@ ShinyComponent <- R6::R6Class(
       call_env <- rlang::env_clone(self$global, parent = parent.frame())
       call_env[["ns"]] <- shiny::NS(id)
       args <- rlang::list2(...)
-      if (is.null(names(args)) || !all(nzchar(names(args)))) {
-        stop("All ... arguments to ShinyComponent ui() method must be named")
+      if (rlang::has_length(args)) {
+        if (is.null(names(args)) || !all(nzchar(names(args)))) {
+          stop("All ... arguments to ShinyComponent ui() method must be named")
+        }
+        mapply(names(args), args, FUN = function(name, val) {
+          call_env[[name]] <- val
+        })
       }
-      mapply(names(args), args, FUN = function(name, val) {
-        call_env[[name]] <- val
-      })
       rlang::eval_bare(ui_parent, env = call_env)
     },
     server = function(..., id = NULL) {
