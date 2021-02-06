@@ -12,8 +12,6 @@ Create A Shiny Component from an R Markdown Document
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{ShinyComponent$new()}}
-\item \href{#method-ui}{\code{ShinyComponent$ui()}}
-\item \href{#method-server}{\code{ShinyComponent$server()}}
 \item \href{#method-assets}{\code{ShinyComponent$assets()}}
 \item \href{#method-app}{\code{ShinyComponent$app()}}
 \item \href{#method-clone}{\code{ShinyComponent$clone()}}
@@ -25,24 +23,6 @@ Create A Shiny Component from an R Markdown Document
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$new(file)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-ui"></a>}}
-\if{latex}{\out{\hypertarget{method-ui}{}}}
-\subsection{Method \code{ui()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$ui(..., id = NULL)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-server"></a>}}
-\if{latex}{\out{\hypertarget{method-server}{}}}
-\subsection{Method \code{server()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$server(..., id = NULL)}\if{html}{\out{</div>}}
 }
 
 }

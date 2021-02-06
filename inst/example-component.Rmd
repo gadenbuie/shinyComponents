@@ -7,14 +7,14 @@ library(shiny)
 initial_header <- "Just a simple demo"
 ```
 
-```{r ui}
+```{ui, .tagList = TRUE}
 h3(initial_header)
 p(message)
 sliderInput(ns("number"), "Pick a number", min = 0, max = 10, value = 1)
 verbatimTextOutput(ns("debug"))
 ```
 
-```{r server}
+```{server}
 output$debug <- renderPrint(input$number)
 reactive(input$number)
 ```
@@ -23,7 +23,7 @@ reactive(input$number)
 h3 { color: #aaa; }
 ```
 
-```{js}
+```{js rewriteH3}
 setTimeout(function() {
   let h3 = document.querySelector('h3')
   h3.textContent = 'Just an awesome demo'
@@ -31,3 +31,9 @@ setTimeout(function() {
 }, 3000)
 ```
 
+```{sass}
+$black: #444;
+body {
+  color: $black;
+}
+```
