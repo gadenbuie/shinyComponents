@@ -48,6 +48,7 @@ ShinyComponent <- R6::R6Class(
       )
     },
     app = function(...) {
+      ...demo <- TRUE
       shiny::shinyApp(
         ui = shiny::fluidPage(
           self$ui(),
