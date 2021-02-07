@@ -118,8 +118,8 @@ ShinyComponent <- R6::R6Class(
         call_env <- rlang::env_clone(private$global, parent = parent.frame())
         call_env[["ns"]] <- shiny::NS(id)
 
-        # prepare arguments
-        args <- rlang::fn_fmls()
+        # prepare arguments in current call
+        args <- as.list(match.call())[-1]
         args <- args[setdiff(names(args), c("...", "id"))]
         dots <- rlang::list2(...)
         if (length(dots)) {
@@ -167,7 +167,7 @@ ShinyComponent <- R6::R6Class(
 
       fn <- function(..., id = NULL) {
         # prepare arguments
-        args <- rlang::fn_fmls()
+        args <- as.list(match.call())[-1]
         args <- args[setdiff(names(args), c("...", "id"))]
         dots <- rlang::list2(...)
         if (length(dots)) {
