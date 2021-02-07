@@ -29,15 +29,22 @@ ShinyComponent <- R6::R6Class(
       }
 
       # prepare ui and server elements
-      self$ui <- lapply(
-        private$get_chunk_names_by_engine("ui"),
-        private$ui_factory
-      )
+      ui_chunks <- private$get_chunk_names_by_engine("ui")
+      self$ui <-
+        if (identical(ui_chunks, c(ui = "ui"))) {
+          # a single ui chunk creates $ui() method
+          private$ui_factory("ui")
+        } else {
+          lapply(ui_chunks, private$ui_factory)
+        }
 
-      self$server <- lapply(
-        private$get_chunk_names_by_engine("server"),
-        private$server_factory
-      )
+      server_chunks <- private$get_chunk_names_by_engine("server")
+      self$server <-
+        if (identical(server_chunks, c(server = "server"))) {
+          private$server_factory("server")
+        } else {
+          lapply(server_chunks, private$server_factory)
+        }
     },
     assets = function() {
       css <- private$get_code_from_chunks_by_engine("css")
@@ -47,15 +54,24 @@ ShinyComponent <- R6::R6Class(
         if (length(js)) htmltools::tags$script(paste(js, collapse = "\n"))
       )
     },
-    app = function(..., id = NULL) {
+    app = function(..., id = NULL, .ui = list(), .server = list()) {
       ...demo <- TRUE
+      stopifnot(
+        "Requires a ui chunk named 'ui'" =
+          "ui" %in% private$get_chunk_names_by_engine("ui"),
+        "Requires a server chunk named 'server'" =
+          "server" %in% private$get_chunk_names_by_engine("server")
+      )
+      ui_fn <- if (rlang::is_function(self$ui)) self$ui else self$ui$ui
+      server_fn <- if(rlang::is_function(self$server)) self$server else self$server$server
+
       shiny::shinyApp(
         ui = shiny::fluidPage(
-          lapply(self$ui, function(x, ...) x(...), id = id),
+          eval(rlang::call2(ui_fn, id = id, !!!.ui)),
           self$assets()
         ),
         server = function(input, output, server) {
-          lapply(self$server, function(x, ...) x(...), id = id)
+          eval(rlang::call2(server_fn, id = id, !!!.server))
         },
         ...
       )
