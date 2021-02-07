@@ -17,6 +17,7 @@ Imports:
     knitr,
     R6,
     rlang,
+    sass,
     shiny
 Encoding: UTF-8
 LazyData: true

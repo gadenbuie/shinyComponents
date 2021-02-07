@@ -49,9 +49,11 @@ ShinyComponent <- R6::R6Class(
     assets = function() {
       css <- private$get_code_from_chunks_by_engine("css")
       js <- private$get_code_from_chunks_by_engine("js")
+      sass <- private$prepare_sass()
       shiny::tagList(
-        if (length(css)) htmltools::tags$style(paste(css, collapse = "\n")),
-        if (length(js)) htmltools::tags$script(paste(js, collapse = "\n"))
+        tag_css_style(sass),
+        tag_css_style(css),
+        tag_js_script(js)
       )
     },
     app = function(..., id = NULL, .ui = list(), .server = list()) {
@@ -229,6 +231,11 @@ ShinyComponent <- R6::R6Class(
     },
     parse_text_body = function(code) {
       rlang::parse_expr(paste0("{", paste(code, collapse = "\n"), "}"))
+    },
+    prepare_sass = function(...) {
+      sass_code <- private$get_code_from_chunks_by_engine("sass")
+      if (is.null(sass_code) || !length(sass_code)) return()
+      sass::sass(sass_code, ...)
     }
   )
 )

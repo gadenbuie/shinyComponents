@@ -20,20 +20,26 @@ reactive(input$number)
 ```
 
 ```{css}
-h3 { color: #aaa; }
+h3 {
+  color: #aaa; 
+}
 ```
 
 ```{js rewriteH3}
 setTimeout(function() {
   let h3 = document.querySelector('h3')
   h3.textContent = 'Just an awesome demo'
-  h3.style.color = 'red'
+  h3.classList = 'green'
 }, 3000)
 ```
 
 ```{sass}
-$black: #444;
+$midnight: #084C61;
+$green: #629677;
 body {
-  color: $black;
+  color: $midnight;
+}
+.green {
+  color: $green;
 }
 ```
