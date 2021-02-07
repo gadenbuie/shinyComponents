@@ -51,11 +51,11 @@ ShinyComponent <- R6::R6Class(
       ...demo <- TRUE
       shiny::shinyApp(
         ui = shiny::fluidPage(
-          self$ui(),
+          lapply(self$ui, function(x) x()),
           self$assets()
         ),
         server = function(input, output, server) {
-          self$server()
+          lapply(self$server, function(x) x())
         },
         ...
       )
@@ -91,18 +91,28 @@ ShinyComponent <- R6::R6Class(
       chunk <- private$chunks[[component]]
       ui_elements <- private$parse_text_exprs(chunk$chunk)
 
+      fn_args <- if (
+        "..." %in% names(chunk$chunk_opts)
+      ) {
+        chunk$chunk_opts[["..."]]
+      }
 
-      function(..., id = NULL) {
+      fn <- function(..., id = NULL) {
         # prepare environment
         call_env <- rlang::env_clone(private$global, parent = parent.frame())
         call_env[["ns"]] <- shiny::NS(id)
 
         # prepare arguments
-        args <- rlang::list2(...)
-        if (length(args)) {
-          if (is.null(names(args)) || !all(nzchar(names(args)))) {
+        args <- rlang::fn_fmls()
+        args <- args[setdiff(names(args), c("...", "id"))]
+        dots <- rlang::list2(...)
+        if (length(dots)) {
+          if (is.null(names(dots)) || !all(nzchar(names(dots)))) {
             stop("All ... arguments to ShinyComponent ui() method must be named")
           }
+        }
+        args <- c(args, dots)
+        if (length(args)) {
           mapply(names(args), args, FUN = function(name, val) {
             call_env[[name]] <- val
           })
@@ -115,6 +125,14 @@ ShinyComponent <- R6::R6Class(
         }
         rlang::eval_bare(ui_elements, env = call_env)
       }
+
+      if (is.null(fn_args)) return(fn)
+      rlang::fn_fmls(fn) <- rlang::pairlist2(
+        !!!eval(fn_args, rlang::env_clone(private$global)),
+        ... =,
+        id = NULL
+      )
+      fn
     },
     server_factory = function(component = "server") {
       stopifnot(
@@ -122,10 +140,27 @@ ShinyComponent <- R6::R6Class(
         "not a server component" = private$chunks[[component]]$engine == "server"
       )
 
-      chunk <- private$chunks[[component]]$chunk
+      chunk <- private$chunks[[component]]
+      chunk_code <- chunk$chunk
 
-      function(..., id = NULL) {
-        args <- rlang::list2(...)
+      fn_args <- if (
+        "..." %in% names(chunk$chunk_opts)
+      ) {
+        chunk$chunk_opts[["..."]]
+      }
+
+      fn <- function(..., id = NULL) {
+        # prepare arguments
+        args <- rlang::fn_fmls()
+        args <- args[setdiff(names(args), c("...", "id"))]
+        dots <- rlang::list2(...)
+        if (length(dots)) {
+          if (is.null(names(dots)) || !all(nzchar(names(dots)))) {
+            stop("All ... arguments to ShinyComponent ui() method must be named")
+          }
+        }
+        args <- c(args, dots)
+
         call_env <- rlang::env_clone(private$global, parent = parent.frame())
 
         # if `id` was provided, the server chunk becomes a module,
@@ -133,7 +168,7 @@ ShinyComponent <- R6::R6Class(
         if (!is.null(id)) {
           module_fn <- rlang::new_function(
             rlang::pairlist2(input=, output=, session=),
-            private$parse_text_body(chunk),
+            private$parse_text_body(chunk_code),
             call_env
           )
           shiny::callModule(module = module_fn, id = id, ...)
@@ -147,9 +182,17 @@ ShinyComponent <- R6::R6Class(
           mapply(names(args), args, FUN = function(name, val) {
             call_env[[name]] <- val
           })
-          eval(parse(text = chunk), envir = call_env)
+          eval(parse(text = chunk_code), envir = call_env)
         }
       }
+
+      if (is.null(fn_args)) return(fn)
+      rlang::fn_fmls(fn) <- rlang::pairlist2(
+        !!!eval(fn_args, rlang::env_clone(private$global)),
+        ... =,
+        id = NULL
+      )
+      fn
     },
     get_code_from_chunks_by_engine = function(engine = "css") {
       Reduce(x = private$chunks, function(acc, item) {

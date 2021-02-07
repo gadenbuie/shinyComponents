@@ -7,15 +7,15 @@ library(shiny)
 initial_header <- "Just a simple demo"
 ```
 
-```{ui, .tagList = TRUE}
+```{ui, .tagList = TRUE, ... = list(message = "MESSAGE")}
 h3(initial_header)
 p(message)
 sliderInput(ns("number"), "Pick a number", min = 0, max = 10, value = 1)
 verbatimTextOutput(ns("debug"))
 ```
 
-```{server}
-output$debug <- renderPrint(input$number)
+```{server, ... = list(times = 1)}
+output$debug <- renderPrint(input$number * times)
 reactive(input$number)
 ```
 
