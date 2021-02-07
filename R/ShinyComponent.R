@@ -47,15 +47,15 @@ ShinyComponent <- R6::R6Class(
         if (length(js)) htmltools::tags$script(paste(js, collapse = "\n"))
       )
     },
-    app = function(...) {
+    app = function(..., id = NULL) {
       ...demo <- TRUE
       shiny::shinyApp(
         ui = shiny::fluidPage(
-          lapply(self$ui, function(x) x()),
+          lapply(self$ui, function(x, ...) x(...), id = id),
           self$assets()
         ),
         server = function(input, output, server) {
-          lapply(self$server, function(x) x())
+          lapply(self$server, function(x, ...) x(...), id = id)
         },
         ...
       )
@@ -156,7 +156,7 @@ ShinyComponent <- R6::R6Class(
         dots <- rlang::list2(...)
         if (length(dots)) {
           if (is.null(names(dots)) || !all(nzchar(names(dots)))) {
-            stop("All ... arguments to ShinyComponent ui() method must be named")
+            stop("All ... arguments to ShinyComponent server() method must be named")
           }
         }
         args <- c(args, dots)
@@ -167,18 +167,13 @@ ShinyComponent <- R6::R6Class(
         # otherwise it gets evaluated as a regular server chunk
         if (!is.null(id)) {
           module_fn <- rlang::new_function(
-            rlang::pairlist2(input=, output=, session=),
+            rlang::pairlist2(input=, output=, session=, !!!args),
             private$parse_text_body(chunk_code),
             call_env
           )
-          shiny::callModule(module = module_fn, id = id, ...)
+          callMod <- rlang::call2(shiny::callModule, module_fn, id = id, !!!args)
+          eval(callMod)
         } else {
-          if (
-            rlang::has_length(args) &&
-              (is.null(names(args)) || !all(nzchar(names(args))))
-          ) {
-            stop("All ... arguments to ShinyComponent server() method must be named")
-          }
           mapply(names(args), args, FUN = function(name, val) {
             call_env[[name]] <- val
           })
