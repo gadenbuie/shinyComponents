@@ -41,9 +41,16 @@ prep_html_dependencies <- function(deps = NULL, envir = new.env()) {
     stop("All dependencies must have a name item")
   }
 
-  dep_names <- vapply(deps, FUN.VALUE = character(1), function(x) {
-    if (rlang::is_string(x)) x else x[["name"]]
+  deps <- lapply(deps, prep_html_dependency, envir = envir)
+  is_html_dep <- vapply(deps, FUN.VALUE = logical(1), function(dep) {
+    inherits(dep, "html_dependency")
   })
-  names(deps) <- dep_names
-  lapply(deps, prep_html_dependency, envir = envir)
+  if (!all(is_html_dep)) {
+    warning("Not all declared dependencies resolved to an object with class 'html_dependency'")
+    deps <- deps[is_html_dep]
+  }
+  names(deps) <- vapply(deps, FUN.VALUE = character(1), function(dep) {
+    dep$name
+  })
+  deps
 }
