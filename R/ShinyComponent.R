@@ -62,9 +62,7 @@ ShinyComponent <- R6::R6Class(
 
       shiny::shinyApp(
         ui = shiny::fluidPage(
-          eval(rlang::call2(ui_fn, id = id, !!!.ui)),
-          self$assets(),
-          self$dependencies
+          eval(rlang::call2(ui_fn, id = id, !!!.ui))
         ),
         server = function(input, output, session) {
           eval(rlang::call2(server_fn, id = id, !!!.server))
@@ -146,7 +144,7 @@ ShinyComponent <- R6::R6Class(
         }
         ui_out <- eval(ui_elements, envir = call_env)
         if (component == "ui") {
-          htmltools::tagList(ui_out, self$dependencies)
+          htmltools::tagList(ui_out, self$assets(), self$dependencies)
         } else {
           ui_out
         }
