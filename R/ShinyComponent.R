@@ -197,13 +197,13 @@ ShinyComponent <- R6::R6Class(
 
         # if `id` was provided, the server chunk becomes a module,
         # otherwise it gets evaluated as a regular server chunk
-        if (!is.null(id)) {
+        if (!is.null(args$id)) {
           module_fn <- rlang::new_function(
             rlang::pairlist2(input=, output=, session=, !!!args),
             private$parse_text_body(chunk_code),
             call_env
           )
-          callMod <- rlang::call2(shiny::callModule, module_fn, id = id, !!!args)
+          callMod <- rlang::call2(shiny::callModule, module_fn, !!!args)
           eval(callMod, envir = call_env)
         } else {
           mapply(names(args), args, FUN = function(name, val) {
