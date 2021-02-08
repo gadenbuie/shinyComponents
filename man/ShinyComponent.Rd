@@ -40,7 +40,7 @@ Create A Shiny Component from an R Markdown Document
 \if{latex}{\out{\hypertarget{method-app}{}}}
 \subsection{Method \code{app()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$app(...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$app(..., id = NULL, .ui = list(), .server = list())}\if{html}{\out{</div>}}
 }
 
 }

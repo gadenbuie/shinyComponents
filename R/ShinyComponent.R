@@ -1,5 +1,6 @@
 #' Create A Shiny Component from an R Markdown Document
 #'
+#' @import shiny
 #' @export
 ShinyComponent <- R6::R6Class(
   "ShinyComponent",
