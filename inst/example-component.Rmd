@@ -3,7 +3,6 @@ title: "Example Component"
 ---
 
 ```{r}
-library(shiny)
 initial_header <- "Just a simple demo"
 ```
 
