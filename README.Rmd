@@ -95,26 +95,28 @@ for you to be call anywhere in your app's server function.
 Any SASS, CSS or JavaScript chunks are concatenated and included in appropriate
 `<style>` and `<script>` tags when you call the `$assets()` method.
 
-The example above hints at a number of additional features.
-First, for simplicity, 
-if you set `.tagList = TRUE` in your `{ui}` chunk's options,
-each expression in the chunk is added to an `htmltools::tagList()`.
+The example above hints at a number of additional features:
 
-Second, any plain R code chunks are treated as global code shared between the UI and Server components.
-In this case, `initial_header` was set to `"Just a simple demo"` in a plain `{r}` chunk.
 
-Third, `{ui}` and `{server}` components may accept inputs whose default values
-are set with the list provided to the `...` chunk option.
-in this case, by setting `... = list(message = "MESSAGE")`,
-we declared that the `$ui()` method will have a `message` argument.
+* First, for simplicity, 
+  if you set `.tagList = TRUE` in your `{ui}` chunk's options,
+  each expression in the chunk is added to an `htmltools::tagList()`.
 
-```{r eval=FALSE}
-ex$ui(message = "Hello, world!")
-```
+* Second, any plain R code chunks are treated as global code shared between the UI and Server components.
+  In this case, `initial_header` was set to `"Just a simple demo"` in a plain `{r}` chunk.
 
-```{r echo=FALSE, comment=""}
-print(ex$ui(message = "Hello, World!")[[1]])
-```
+* Third, `{ui}` and `{server}` components may accept inputs whose default values
+  are set with the list provided to the `...` chunk option.
+  in this case, by setting `... = list(message = "MESSAGE")`,
+  we declared that the `$ui()` method will have a `message` argument.
+
+  ```{r eval=FALSE}
+  ex$ui(message = "Hello, world!")
+  ```
+  
+  ```{r echo=FALSE, comment=""}
+  print(ex$ui(message = "Hello, World!")[[1]])
+  ```
 
 
 
@@ -128,8 +130,7 @@ library(shiny)
 ex <- ShinyComponent$new(ex_rmd)
 
 ui <- fluidPage(
-  ex$ui(),
-  ex$assets()
+  ex$ui()
 )
 
 server <- function(input, output, session) {

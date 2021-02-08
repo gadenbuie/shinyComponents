@@ -152,30 +152,32 @@ for you to be call anywhere in your app’s server function. Any SASS, CSS
 or JavaScript chunks are concatenated and included in appropriate
 `<style>` and `<script>` tags when you call the `$assets()` method.
 
-The example above hints at a number of additional features. First, for
-simplicity, if you set `.tagList = TRUE` in your `{ui}` chunk’s options,
-each expression in the chunk is added to an `htmltools::tagList()`.
+The example above hints at a number of additional features:
 
-Second, any plain R code chunks are treated as global code shared
-between the UI and Server components. In this case, `initial_header` was
-set to `"Just a simple demo"` in a plain `{r}` chunk.
+-   First, for simplicity, if you set `.tagList = TRUE` in your `{ui}`
+    chunk’s options, each expression in the chunk is added to an
+    `htmltools::tagList()`.
 
-Third, `{ui}` and `{server}` components may accept inputs whose default
-values are set with the list provided to the `...` chunk option. in this
-case, by setting `... = list(message = "MESSAGE")`, we declared that the
-`$ui()` method will have a `message` argument.
+-   Second, any plain R code chunks are treated as global code shared
+    between the UI and Server components. In this case, `initial_header`
+    was set to `"Just a simple demo"` in a plain `{r}` chunk.
 
-``` r
-ex$ui(message = "Hello, world!")
-```
+-   Third, `{ui}` and `{server}` components may accept inputs whose
+    default values are set with the list provided to the `...` chunk
+    option. in this case, by setting `... = list(message = "MESSAGE")`,
+    we declared that the `$ui()` method will have a `message` argument.
 
-    <h3>Just a simple demo</h3>
-    <p>Hello, World!</p>
-    <div class="form-group shiny-input-container">
-      <label class="control-label" id="number-label" for="number">Pick a number</label>
-      <input class="js-range-slider" id="number" data-skin="shiny" data-min="0" data-max="10" data-from="1" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-data-type="number"/>
-    </div>
-    <pre class="shiny-text-output noplaceholder" id="debug"></pre>
+    ``` r
+    ex$ui(message = "Hello, world!")
+    ```
+
+        <h3>Just a simple demo</h3>
+        <p>Hello, World!</p>
+        <div class="form-group shiny-input-container">
+          <label class="control-label" id="number-label" for="number">Pick a number</label>
+          <input class="js-range-slider" id="number" data-skin="shiny" data-min="0" data-max="10" data-from="1" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-data-type="number"/>
+        </div>
+        <pre class="shiny-text-output noplaceholder" id="debug"></pre>
 
 ### Using in a Shiny app
 
@@ -187,8 +189,7 @@ library(shiny)
 ex <- ShinyComponent$new(ex_rmd)
 
 ui <- fluidPage(
-  ex$ui(),
-  ex$assets()
+  ex$ui()
 )
 
 server <- function(input, output, session) {
