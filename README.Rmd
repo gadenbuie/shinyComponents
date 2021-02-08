@@ -86,7 +86,7 @@ this chunk will become available in the `$ui()` method.
 ex$ui()
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, comment=""}
 print(ex$ui())
 ```
 
@@ -112,7 +112,7 @@ we declared that the `$ui()` method will have a `message` argument.
 ex$ui(message = "Hello, world!")
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, comment=""}
 print(ex$ui(message = "Hello, World!")[[1]])
 ```
 

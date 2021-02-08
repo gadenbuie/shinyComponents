@@ -123,29 +123,29 @@ available in the `$ui()` method.
 ex$ui()
 ```
 
-    #> <h3>Just a simple demo</h3>
-    #> <p>MESSAGE</p>
-    #> <div class="form-group shiny-input-container">
-    #>   <label class="control-label" id="number-label" for="number">Pick a number</label>
-    #>   <input class="js-range-slider" id="number" data-skin="shiny" data-min="0" data-max="10" data-from="1" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-data-type="number"/>
-    #> </div>
-    #> <pre class="shiny-text-output noplaceholder" id="debug"></pre>
-    #> <style>body {
-    #>   color: #084C61;
-    #> }
-    #> 
-    #> .green {
-    #>   color: #629677;
-    #> }
-    #> </style>
-    #> <style>h3 {
-    #>   color: #aaa; 
-    #> }</style>
-    #> <script>setTimeout(function() {
-    #>   let h3 = document.querySelector('h3')
-    #>   h3.textContent = 'Just an awesome demo'
-    #>   h3.classList = 'green'
-    #> }, 3000)</script>
+    <h3>Just a simple demo</h3>
+    <p>MESSAGE</p>
+    <div class="form-group shiny-input-container">
+      <label class="control-label" id="number-label" for="number">Pick a number</label>
+      <input class="js-range-slider" id="number" data-skin="shiny" data-min="0" data-max="10" data-from="1" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-data-type="number"/>
+    </div>
+    <pre class="shiny-text-output noplaceholder" id="debug"></pre>
+    <style>body {
+      color: #084C61;
+    }
+
+    .green {
+      color: #629677;
+    }
+    </style>
+    <style>h3 {
+      color: #aaa; 
+    }</style>
+    <script>setTimeout(function() {
+      let h3 = document.querySelector('h3')
+      h3.textContent = 'Just an awesome demo'
+      h3.classList = 'green'
+    }, 3000)</script>
 
 Similarly, the `server` chunk is available in the `$server()` method,
 for you to be call anywhere in your app’s server function. Any SASS, CSS
@@ -169,13 +169,13 @@ case, by setting `... = list(message = "MESSAGE")`, we declared that the
 ex$ui(message = "Hello, world!")
 ```
 
-    #> <h3>Just a simple demo</h3>
-    #> <p>Hello, World!</p>
-    #> <div class="form-group shiny-input-container">
-    #>   <label class="control-label" id="number-label" for="number">Pick a number</label>
-    #>   <input class="js-range-slider" id="number" data-skin="shiny" data-min="0" data-max="10" data-from="1" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-data-type="number"/>
-    #> </div>
-    #> <pre class="shiny-text-output noplaceholder" id="debug"></pre>
+    <h3>Just a simple demo</h3>
+    <p>Hello, World!</p>
+    <div class="form-group shiny-input-container">
+      <label class="control-label" id="number-label" for="number">Pick a number</label>
+      <input class="js-range-slider" id="number" data-skin="shiny" data-min="0" data-max="10" data-from="1" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-data-type="number"/>
+    </div>
+    <pre class="shiny-text-output noplaceholder" id="debug"></pre>
 
 ### Using in a Shiny app
 
