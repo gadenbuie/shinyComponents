@@ -8,26 +8,11 @@ ShinyComponent <- R6::R6Class(
     ui = "<list>",
     server = "<list>",
     initialize = function(file) {
-      private$chunks <- read_knitr_chunks(file)
-      names(private$chunks) <- tolower(names(private$chunks))
-      private$check_chunks()
+      knit_result <- read_knitr_chunks(file, new.env(parent = baseenv()))
 
-      # evaluate standard R chunks into the global environment
-      r_chunks <- private$get_chunks_by_engine("r")
-      if (length(r_chunks)) {
-        for (r_chunk in r_chunks) {
-          if (!is.null(r_chunk$chunk_opts$eval) && !isTRUE(r_chunk$chunk_opts$eval)) {
-            next
-          }
-          chunk_code <- paste(r_chunk$chunk, collapse = "\n")
-          if (!grepl("[^\\s]", chunk_code)) next
-          exprs <- rlang::parse_exprs(chunk_code)
-          if (!length(exprs)) next
-          for (expr in exprs) {
-            rlang::eval_bare(expr, private$global)
-          }
-        }
-      }
+      private$global <- knit_result$envir
+      private$chunks <- knit_result$chunks
+      private$check_chunks()
 
       # prepare ui and server elements
       ui_chunks <- private$get_chunk_names_by_engine("ui")
@@ -82,7 +67,7 @@ ShinyComponent <- R6::R6Class(
   ),
   private = list(
     chunks = "<chunks from rmd>",
-    global = new.env(),
+    global = "<envir from knitting rmd>",
     check_chunks = function() {
       if (length(private$get_chunks_by_engine("ui")) < 1) {
         stop("Needs at least one `ui` chunk")

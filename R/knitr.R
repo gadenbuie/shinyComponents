@@ -1,10 +1,9 @@
-read_knitr_chunks <- function(file) {
+read_knitr_chunks <- function(file, envir = new.env()) {
   chunks <- list()
 
   old_opts_knit <- knitr::opts_knit$get("unnamed.chunk.label")
   knitr::opts_knit$set(unnamed.chunk.label = "__unnamed__")
 
-  r_engine <- knitr::knit_engines$get("r")
   knitr::knit_engines$set(ui = identity, server = identity)
 
   hook_get_chunk <- function(before, options, envir) {
@@ -19,7 +18,7 @@ read_knitr_chunks <- function(file) {
   }
 
   hook_chunk_disable <- function(options) {
-    options$eval <- FALSE
+    options$eval <- identical(options$engine, "R") && options$eval
     options
   }
 
@@ -33,7 +32,7 @@ read_knitr_chunks <- function(file) {
 
   # render component Rmd to extract chunk information
   tmpfile <- tempfile(fileext = "md")
-  outfile <- knitr::knit(file, output = tmpfile, quiet = TRUE)
+  outfile <- knitr::knit(file, output = tmpfile, quiet = TRUE, envir = envir)
 
   # clean up temp files and restore hooks
   unlink(outfile)
@@ -42,7 +41,10 @@ read_knitr_chunks <- function(file) {
   knitr::opts_knit$set(unnamed.chunk.label = old_opts_knit)
 
   # return chunk details
-  relabel_chunks(chunks)
+  list(
+    chunks = relabel_chunks(chunks),
+    envir = envir
+  )
 }
 
 restore_knitr_hooks <- function(chunk = NULL, eval = NULL) {
