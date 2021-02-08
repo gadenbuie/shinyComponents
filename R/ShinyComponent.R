@@ -7,12 +7,19 @@ ShinyComponent <- R6::R6Class(
   public = list(
     ui = "<list>",
     server = "<list>",
+    dependencies = "<list>",
     initialize = function(file) {
       knit_result <- read_knitr_chunks(file, new.env(parent = baseenv()))
 
       private$global <- knit_result$envir
       private$chunks <- knit_result$chunks
       private$check_chunks()
+
+      # prepare dependencies, if any
+      self$dependencies <- prep_html_dependencies(
+        extract_yaml(file)$dependencies,
+        envir = private$global
+      )
 
       # prepare ui and server elements
       ui_chunks <- private$get_chunk_names_by_engine("ui")
@@ -56,7 +63,8 @@ ShinyComponent <- R6::R6Class(
       shiny::shinyApp(
         ui = shiny::fluidPage(
           eval(rlang::call2(ui_fn, id = id, !!!.ui)),
-          self$assets()
+          self$assets(),
+          self$dependencies
         ),
         server = function(input, output, session) {
           eval(rlang::call2(server_fn, id = id, !!!.server))
@@ -104,13 +112,18 @@ ShinyComponent <- R6::R6Class(
         # prepare environment
         call_env <- rlang::env_clone(private$global, parent = parent.frame())
         call_env[["ns"]] <- shiny::NS(id)
+        call_env[["self"]] <- self
 
         # prepare arguments in current call
-        args <- shallow_update_list(
-          eval(fn_args, rlang::env_clone(private$global)), # args defined in chunk
-          as.list(match.call())[-1]                        # args in current call
+        # start with args defined in chunk, ensuring id is present
+        fn_args <- shallow_update_list(
+          eval(fn_args, rlang::env_clone(private$global)),
+          list(id = NULL)
         )
-        args <- args[setdiff(names(args), c("...", "id"))]
+        # then merge with args in the current call
+        args <- shallow_update_list(fn_args, as.list(match.call())[-1])
+        # and take out dots, which are handled separately (TODO: remove?)
+        args <- args[setdiff(names(args), c("..."))]
         dots <- rlang::list2(...)
         if (length(dots)) {
           if (is.null(names(dots)) || !all(nzchar(names(dots)))) {
@@ -131,7 +144,12 @@ ShinyComponent <- R6::R6Class(
         } else {
           parse(text = paste(chunk$chunk, collapse = "\n"))
         }
-        eval(ui_elements, envir = call_env)
+        ui_out <- eval(ui_elements, envir = call_env)
+        if (component == "ui") {
+          htmltools::tagList(ui_out, self$dependencies)
+        } else {
+          ui_out
+        }
       }
 
       if (is.null(fn_args)) return(fn)
@@ -159,11 +177,15 @@ ShinyComponent <- R6::R6Class(
 
       fn <- function(..., id = NULL) {
         # prepare arguments
-        args <- shallow_update_list(
-          eval(fn_args, rlang::env_clone(private$global)), # args defined in chunk
-          as.list(match.call())[-1]                        # args in current call
+        # start with args defined in chunk, ensuring id is present
+        fn_args <- shallow_update_list(
+          eval(fn_args, rlang::env_clone(private$global)),
+          list(id = NULL)
         )
-        args <- args[setdiff(names(args), c("...", "id"))]
+        # then merge with args in the current call
+        args <- shallow_update_list(fn_args, as.list(match.call())[-1])
+        # and take out dots, which are handled separately (TODO: remove?)
+        args <- args[setdiff(names(args), c("..."))]
         dots <- rlang::list2(...)
         if (length(dots)) {
           if (is.null(names(dots)) || !all(nzchar(names(dots)))) {
@@ -173,6 +195,7 @@ ShinyComponent <- R6::R6Class(
         args <- c(args, dots)
 
         call_env <- rlang::env_clone(private$global, parent = parent.frame())
+        call_env[["self"]] <- self
 
         # if `id` was provided, the server chunk becomes a module,
         # otherwise it gets evaluated as a regular server chunk
