@@ -66,14 +66,14 @@ ShinyComponent <- R6::R6Class(
           "server" %in% private$get_chunk_names_by_engine("server")
       )
       ui_fn <- if (rlang::is_function(self$ui)) self$ui else self$ui$ui
-      server_fn <- if(rlang::is_function(self$server)) self$server else self$server$server
+      server_fn <- if (rlang::is_function(self$server)) self$server else self$server$server
 
       shiny::shinyApp(
         ui = shiny::fluidPage(
           eval(rlang::call2(ui_fn, id = id, !!!.ui)),
           self$assets()
         ),
-        server = function(input, output, server) {
+        server = function(input, output, session) {
           eval(rlang::call2(server_fn, id = id, !!!.server))
         },
         ...
