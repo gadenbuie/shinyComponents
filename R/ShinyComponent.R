@@ -108,7 +108,6 @@ ShinyComponent <- R6::R6Class(
     ui_factory = function(component) {
       stopifnot(component %in% names(private$chunks))
       chunk <- private$chunks[[component]]
-      ui_elements <- private$parse_text_exprs(chunk$chunk)
 
       fn_args <- if (
         "..." %in% names(chunk$chunk_opts)
@@ -139,10 +138,12 @@ ShinyComponent <- R6::R6Class(
 
         .tagList <- chunk$chunk_opts$.tagList %||% "FALSE"
         ui_as_taglist <- eval(parse(text = .tagList), call_env)
-        if (isTRUE(ui_as_taglist)) {
-          ui_elements <- rlang::call2(htmltools::tagList, !!!ui_elements)
+        ui_elements <- if (isTRUE(ui_as_taglist)) {
+          rlang::call2(htmltools::tagList, !!!private$parse_text_exprs(chunk$chunk))
+        } else {
+          parse(text = paste(chunk$chunk, collapse = "\n"))
         }
-        rlang::eval_bare(ui_elements, env = call_env)
+        eval(ui_elements, envir = call_env)
       }
 
       if (is.null(fn_args)) return(fn)
@@ -191,7 +192,7 @@ ShinyComponent <- R6::R6Class(
             call_env
           )
           callMod <- rlang::call2(shiny::callModule, module_fn, id = id, !!!args)
-          eval(callMod)
+          eval(callMod, envir = call_env)
         } else {
           mapply(names(args), args, FUN = function(name, val) {
             call_env[[name]] <- val
