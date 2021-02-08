@@ -107,8 +107,8 @@ ShinyComponent <- R6::R6Class(
 
         # prepare arguments in current call
         args <- shallow_update_list(
-          eval(fn_args, private$global), # args defined in chunk
-          as.list(match.call())[-1]      # args in current call
+          eval(fn_args, rlang::env_clone(private$global)), # args defined in chunk
+          as.list(match.call())[-1]                        # args in current call
         )
         args <- args[setdiff(names(args), c("...", "id"))]
         dots <- rlang::list2(...)
@@ -160,8 +160,8 @@ ShinyComponent <- R6::R6Class(
       fn <- function(..., id = NULL) {
         # prepare arguments
         args <- shallow_update_list(
-          eval(fn_args, private$global), # args defined in chunk
-          as.list(match.call())[-1]      # args in current call
+          eval(fn_args, rlang::env_clone(private$global)), # args defined in chunk
+          as.list(match.call())[-1]                        # args in current call
         )
         args <- args[setdiff(names(args), c("...", "id"))]
         dots <- rlang::list2(...)
