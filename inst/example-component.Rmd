@@ -3,29 +3,42 @@ title: "Example Component"
 ---
 
 ```{r}
-library(shiny)
 initial_header <- "Just a simple demo"
 ```
 
-```{r ui}
+```{ui, .tagList = TRUE, ... = list(message = "MESSAGE")}
 h3(initial_header)
-sliderInput("number", "Pick a number", min = 0, max = 10, value = 1)
-verbatimTextOutput("debug")
+p(message)
+sliderInput(ns("number"), "Pick a number", min = 0, max = 10, value = 1)
+verbatimTextOutput(ns("debug"))
 ```
 
-```{r server}
-output$debug <- renderPrint(input$number)
+```{server, ... = list(times = 1)}
+output$debug <- renderPrint(input$number * times)
+reactive(input$number)
 ```
 
 ```{css}
-h3 { color: #aaa; }
+h3 {
+  color: #aaa; 
+}
 ```
 
-```{js}
+```{js rewriteH3}
 setTimeout(function() {
   let h3 = document.querySelector('h3')
   h3.textContent = 'Just an awesome demo'
-  h3.style.color = 'red'
+  h3.classList = 'green'
 }, 3000)
 ```
 
+```{sass}
+$midnight: #084C61;
+$green: #629677;
+body {
+  color: $midnight;
+}
+.green {
+  color: $green;
+}
+```

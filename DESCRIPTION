@@ -1,6 +1,6 @@
 Package: shinyComponents
 Title: 'Shiny' Components in 'R Markdown'
-Version: 0.0.0.9000
+Version: 0.0.1.9000
 Authors@R: 
     person(given = "Garrick",
            family = "Aden-Buie",
@@ -17,7 +17,9 @@ Imports:
     knitr,
     R6,
     rlang,
-    shiny
+    sass,
+    shiny,
+    yaml
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

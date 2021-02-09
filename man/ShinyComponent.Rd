@@ -4,79 +4,88 @@
 \alias{ShinyComponent}
 \title{Create A Shiny Component from an R Markdown Document}
 \description{
-Create A Shiny Component from an R Markdown Document
+Shiny Components are self-contained shiny modules or app components, defined
+in R Markdown documents.
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{ui}}{The UI components. If the component contains only one
+unnamed \code{ui} chunk, or one \code{ui} chunk named \code{ui}, then this field is a
+method, otherwise it is a list of \code{ui} component methods.}
 
-Create A Shiny Component from an R Markdown Document
+\item{\code{server}}{The server components. If the component contains only one
+unnamed \code{server} chunk, or one \code{server} chunk named \code{server}, then this
+field is a method, otherwise it is a list of \code{server} component methods.}
+
+\item{\code{dependencies}}{A list of the component's HTML dependencies.}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{ShinyComponent$new()}}
-\item \href{#method-ui}{\code{ShinyComponent$ui()}}
-\item \href{#method-server}{\code{ShinyComponent$server()}}
 \item \href{#method-assets}{\code{ShinyComponent$assets()}}
 \item \href{#method-app}{\code{ShinyComponent$app()}}
-\item \href{#method-clone}{\code{ShinyComponent$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize the Shiny Component from an R Markdown file.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$new(file)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-ui"></a>}}
-\if{latex}{\out{\hypertarget{method-ui}{}}}
-\subsection{Method \code{ui()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$ui()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-server"></a>}}
-\if{latex}{\out{\hypertarget{method-server}{}}}
-\subsection{Method \code{server()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$server()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-assets"></a>}}
-\if{latex}{\out{\hypertarget{method-assets}{}}}
-\subsection{Method \code{assets()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$assets()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-app"></a>}}
-\if{latex}{\out{\hypertarget{method-app}{}}}
-\subsection{Method \code{app()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$app(...)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$clone(deep = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{deep}}{Whether to make a deep clone.}
+\item{\code{file}}{Path to the R Markdown document}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new Shiny Component
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-assets"></a>}}
+\if{latex}{\out{\hypertarget{method-assets}{}}}
+\subsection{Method \code{assets()}}{
+The component's CSS, compiled SASS, and JavaScript assets.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$assets()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A \code{\link[shiny:reexports]{shiny::tagList()}} containing the component's CSS and
+JavaScript assets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-app"></a>}}
+\if{latex}{\out{\hypertarget{method-app}{}}}
+\subsection{Method \code{app()}}{
+An example app, created from the primary \code{ui} and \code{server}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ShinyComponent$app(..., id = NULL, .ui = list(), .server = list())}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Additional variables added into \code{ui} and \code{server} environments,
+in \code{ui}, \code{server} and \code{app} methods. Otherwise, ignored.}
+
+\item{\code{id}}{The component ID, if the component is being used as Shiny
+module.}
+
+\item{\code{.ui}}{A list of arguments to be passed on to the \code{ui()} method.}
+
+\item{\code{.server}}{A list of arguments to be passed on to the \code{server()}
+method.}
 }
 \if{html}{\out{</div>}}
 }
