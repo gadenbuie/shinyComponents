@@ -1,13 +1,30 @@
 #' Create A Shiny Component from an R Markdown Document
 #'
+#' @description
+#' Shiny Components are self-contained shiny modules or app components, defined
+#' in R Markdown documents.
+#'
 #' @import shiny
+#' @param ... Additional variables added into `ui` and `server` environments,
+#'   in `ui`, `server` and `app` methods. Otherwise, ignored.
 #' @export
 ShinyComponent <- R6::R6Class(
   "ShinyComponent",
+  cloneable = FALSE,
   public = list(
+    #' @field ui The UI components. If the component contains only one
+    #'   unnamed `ui` chunk, or one `ui` chunk named `ui`, then this field is a
+    #'   method, otherwise it is a list of `ui` component methods.
     ui = "<list>",
+    #' @field server The server components. If the component contains only one
+    #'   unnamed `server` chunk, or one `server` chunk named `server`, then this
+    #'   field is a method, otherwise it is a list of `server` component methods.
     server = "<list>",
+    #' @field dependencies A list of the component's HTML dependencies.
     dependencies = "<list>",
+    #' @description Initialize the Shiny Component from an R Markdown file.
+    #' @param file Path to the R Markdown document
+    #' @return A new Shiny Component
     initialize = function(file) {
       knit_result <- read_knitr_chunks(file, new.env(parent = baseenv()))
 
@@ -39,6 +56,9 @@ ShinyComponent <- R6::R6Class(
           lapply(server_chunks, private$server_factory)
         }
     },
+    #' @description The component's CSS, compiled SASS, and JavaScript assets.
+    #' @return A [shiny::tagList()] containing the component's CSS and
+    #'   JavaScript assets.
     assets = function() {
       css <- private$get_code_from_chunks_by_engine("css")
       js <- private$get_code_from_chunks_by_engine("js")
@@ -49,6 +69,12 @@ ShinyComponent <- R6::R6Class(
         tag_js_script(js)
       )
     },
+    #' @description An example app, created from the primary `ui` and `server`.
+    #' @param id The component ID, if the component is being used as Shiny
+    #'   module.
+    #' @param .ui A list of arguments to be passed on to the `ui()` method.
+    #' @param .server A list of arguments to be passed on to the `server()`
+    #'   method.
     app = function(..., id = NULL, .ui = list(), .server = list()) {
       ...demo <- TRUE
       stopifnot(
