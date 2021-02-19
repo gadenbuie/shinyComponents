@@ -1,0 +1,4 @@
+name: Shiny Component
+description: >
+   A Shiny Component in R Markdown
+create_dir: FALSE

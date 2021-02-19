@@ -1,0 +1,122 @@
+---
+title: "A Starter Shiny Component"
+author: "{shinyComponents}"
+dependencies:
+  ## Declare additional HTML dependencies here, either by naming a function
+  # - rmarkdown::html_dependency_font_awesome
+  ##
+  ## or by specfiying a list matching the arguments of htmltools::htmlDependency()
+  # - name: animate.css
+  #   version: 4.1.1
+  #   src:
+  #     href: https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/
+  #   stylesheet: animate.min.css
+knit: "shinyComponents:::knit_preview"
+---
+
+This example module is reproduced from <https://mastering-shiny.org/scaling-modules.html>.
+
+Currently, `shinyComponents` doesn't use the Markdown text in the component `.Rmd`.
+You can use this text to document or explain your component.
+
+For example, we start with an R chunk.
+Any standard R chunks are _global_, 
+analogous to code that would be included in `global.R` in a Shiny app.
+
+```{r}
+# global setup code shared between UI and Server
+```
+
+In a Shiny Component `.Rmd` file, there are two additional chunk types:
+`ui` and `server` chunks.
+
+You can have a single unnamed chunk for each of `ui` and `server`.
+For small components, you only need these two chunks.
+For larger components, 
+or for components that you would like to split into composable pieces,
+you can name the `ui` and `server` chunks.
+They then become available in the `$ui$<name>` function.
+
+For example, here's a `$ui$plot()` function.
+This will display the histogram created as the `"hist"` output in the `server` chunk.
+
+```{ui plot}
+plotOutput(ns("hist"))
+```
+
+We also have a `$ui$controls()` function,
+which includes a variable selection and a numeric input to control the bins.
+You can imagine wanting to place the controls and the plot in separate places in future apps,
+so we've separated the controls from the plot.
+
+Notice that there are two additional chunk opts set in this `ui` chunk:
+
+- `.tagList = TRUE` adds each expression in the chunk in a `tagList()`
+- `... = list()` is used to declare arguments to the `$ui$controls()` function:
+    - `var` defaults to `"mpg"`
+    - `bins` defaults to `10`
+
+```{ui controls, .tagList = TRUE, ... = list(var = "mpg", bins = 10)}
+selectInput(ns("var"), "Variable", names(mtcars), selected = var)
+numericInput(ns("bins"), "Bins", value = as.integer(bins), min = 1)
+```
+
+Finally, we have our unnamed `ui` chunk.
+This chunk can serve one of two purposes:
+
+- It can be used to provide a default arrangement of the component's UI pieces.
+- Or it can be a complete UI that is used for demonstrating _how_ the UI pieces work.
+
+Notice that we've repeated the `$ui$controls()` arguments here.
+This UI chunk will create a `$ui$ui()` function
+and we'll now be able to set the `$ui$controls()` arguments from the `$ui$ui()` function.
+
+```{ui, ... = list(var = "mpg", bins = 10)}
+sidebarLayout(
+  sidebarPanel(
+    h2("Shiny Component Demo", id = "demo-header"),
+    self$ui$controls(var, bins)
+  ),
+  mainPanel(self$ui$plot())
+)
+```
+
+Next we have our `server` chunk.
+This chunk becomes `$server()`, because there is only one unnamed `server` chunk.
+
+```{server}
+data <- reactive(mtcars[[input$var]])
+output$hist <- renderPlot({
+  hist(data(), breaks = input$bins, main = input$var)
+})
+```
+
+Finally, you may also have JavaScript (`js`) and CSS (`css`) chunks.
+These chunks are made available as `$assets()`.
+These assets are automatically included when you call `$ui()` or `$app()`,
+but they aren't included when you use the component pieces
+so that you can manage when and how they are added to your larger Shiny app yourself.
+
+```{css echo=FALSE}
+.red {
+  color: #d33f49
+}
+```
+
+```{js}
+setTimeout(function() {
+  var demoHeader = document.getElementById('demo-header')
+  if (demoHeader) demoHeader.classList.add('red')
+}, 2000)
+```
+
+To preview your app, you can click the "Knit" button.
+(You will have to stop the knit process to re-knit, though).
+
+Or you can load your component and run `$app()`.
+
+```r
+library(shinyComponents)
+cmp <- ShinyComponent$new("component.Rmd")
+cmp$app()
+```
