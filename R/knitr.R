@@ -32,7 +32,12 @@ read_knitr_chunks <- function(file, envir = new.env()) {
 
   # render component Rmd to extract chunk information
   tmpfile <- tempfile(fileext = "md")
-  outfile <- knitr::knit(file, output = tmpfile, quiet = TRUE, envir = envir)
+  outfile <-
+    if (length(file) > 1 || grepl("\n", file)) {
+      knitr::knit(text = file, output = tmpfile, quiet = TRUE, envir = envir)
+    } else {
+      knitr::knit(file, output = tmpfile, quiet = TRUE, envir = envir)
+    }
 
   # clean up temp files and restore hooks
   unlink(outfile)
