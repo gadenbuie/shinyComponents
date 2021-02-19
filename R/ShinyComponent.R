@@ -138,6 +138,9 @@ ShinyComponent <- R6::R6Class(
         call_env[["ns"]] <- shiny::NS(id)
         call_env[["self"]] <- self
 
+        call_args <- as.list(match.call())[-1]
+        call_args <- lapply(call_args, eval, envir = parent.frame()) # force(call_args)
+
         # prepare arguments in current call
         # start with args defined in chunk, ensuring id is present
         fn_args <- shallow_update_list(
@@ -145,7 +148,7 @@ ShinyComponent <- R6::R6Class(
           list(id = NULL)
         )
         # then merge with args in the current call
-        args <- shallow_update_list(fn_args, as.list(match.call())[-1])
+        args <- shallow_update_list(fn_args, call_args)
         # and take out dots, which are handled separately (TODO: remove?)
         args <- args[setdiff(names(args), c("..."))]
         dots <- rlang::list2(...)
